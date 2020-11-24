@@ -1,5 +1,5 @@
 {
-  "name": "order-api",
+  "name": "order_mng_system",
   "version": "1.0.0",
   "description": "Order Management System",
   "main": "./dist/server.js",
