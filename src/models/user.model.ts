@@ -1,5 +1,3 @@
-'use strict';
-
 export interface User {
   id: String;
   username: String;
