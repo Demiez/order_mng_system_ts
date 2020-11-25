@@ -42,7 +42,7 @@ const validateUser = (user: User) => {
   user.phone.should.be.a('Number');
 };
 
-describe('userRoute', () => {
+describe(':: userRoute', () => {
   it('should respond with HTTP 404 status because there is no user', async () => {
     const res = await chai
       .request(app)

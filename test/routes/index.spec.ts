@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 
 const expect = chai.expect;
 
-describe('baseRoute', () => {
+describe(':: baseRoute', () => {
   it('should respond with HTTP 200 status', async () => {
     const res = await chai
       .request(app)
