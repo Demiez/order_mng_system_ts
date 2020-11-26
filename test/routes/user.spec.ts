@@ -1,5 +1,6 @@
 import * as chai from 'chai';
 import 'chai/register-should';
+import chaiHttp = require('chai-http');
 import 'mocha';
 import { v4 } from 'uuid';
 import app from '../../src/app';
@@ -42,18 +43,21 @@ const validateUser = (user: User) => {
   user.phone.should.be.a('Number');
 };
 
+const sendRequestGetUserById = async (userId: string) =>
+  chai
+    .request(app)
+    .get(`/users/${userId}`)
+    .catch((err) => {
+      if (err.response) {
+        return err.response as Response;
+      } else {
+        throw err;
+      }
+    });
+
 describe(':: userRoute', () => {
   it('should respond with HTTP 404 status because there is no user', async () => {
-    const res = await chai
-      .request(app)
-      .get(`/users/${user01.username}`)
-      .catch((err) => {
-        if (err.response) {
-          return err.response as Response;
-        } else {
-          throw err;
-        }
-      });
+    const res = await sendRequestGetUserById(user01.id);
 
     res.should.be.equal(404);
   });
@@ -75,5 +79,40 @@ describe(':: userRoute', () => {
     res.body.should.be.an('object');
     validateUser(res.body);
     res.body.username.should.be.equal(user01.username);
+  });
+
+  it('should return previously created user', async () => {
+    const res = await sendRequestGetUserById(user01.id);
+
+    res.status.should.be.equal(200);
+    res.body.should.be.an('object');
+    validateUser(res.body);
+    res.body.id.should.be.equal(user01.id);
+  });
+
+  it('should updated mocked user01', async () => {
+    user01.username = 'Bob Updated';
+    user01.firstName = 'Bob Updated';
+    user01.lastName = 'TestUser Updated';
+    user01.email = 'bob_updated@email.com';
+    user01.password = 'password_updated';
+    user01.phone = '4444-000-000';
+    user01.userStatus = 12;
+
+    const res = await chai
+      .request(app)
+      .patch(`/users/${user01.id}`)
+      .send(user01)
+      .catch((err) => {
+        if (err.response) {
+          return err.response as Response;
+        } else {
+          throw err;
+        }
+      });
+
+    res.status.should.be.equal(204);
+    res.body.should.be.an('object');
+    validateUser(res.body);
   });
 });
