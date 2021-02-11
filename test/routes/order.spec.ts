@@ -51,6 +51,18 @@ const sendRequestGetOrderById = (orderId: string) =>
       }
     });
 
+const sendRequestDeleteOrderById = (orderId: string) =>
+  chai
+    .request(app)
+    .del(`/store/orders/${orderId}`)
+    .catch((err) => {
+      if (err.response) {
+        return err.response as Response;
+      } else {
+        throw err;
+      }
+    });
+
 describe(':: userRoute', () => {
   it('should respond with status 404 if there is no order', async () => {
     const res = await sendRequestGetOrderById(order.id);
@@ -87,5 +99,34 @@ describe(':: userRoute', () => {
     validateOrder(res.body);
     res.body.id.should.be.equal(order.id);
     res.body.status.should.be.equal(order.status);
+  });
+
+  it('should return the inventory for all users', async () => {
+    const res = await chai
+      .request(app)
+      .get('/store/inventory')
+      .catch((err) => {
+        if (err.response) {
+          return err.response as Response;
+        } else {
+          throw err;
+        }
+      });
+
+    res.status.should.be.equal(200);
+    res.body.should.be.an('array');
+    res.body[20].length.should.be.equal(1);
+  });
+
+  it('should remove an existing order', async () => {
+    const res = await sendRequestDeleteOrderById(order.id);
+
+    res.status.should.be.equal(204);
+  });
+
+  it('should return 404 when trying to remove non-existing order', async () => {
+    const res = await sendRequestDeleteOrderById(order.id);
+
+    res.status.should.be.equal(404);
   });
 });
