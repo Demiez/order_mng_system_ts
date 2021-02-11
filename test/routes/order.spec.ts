@@ -63,7 +63,7 @@ const sendRequestDeleteOrderById = (orderId: string) =>
       }
     });
 
-describe(':: userRoute', () => {
+describe(':: orderRoute', () => {
   it('should respond with status 404 if there is no order', async () => {
     const res = await sendRequestGetOrderById(order.id);
 
